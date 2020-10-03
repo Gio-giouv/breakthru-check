@@ -36,8 +36,11 @@ class State_Game():
 			self.Goldmove = not self.Goldmove # switch to silver
 	# consider valid moves
 	def valid_moves(self):
-		return self.possible_moves()# for now
-	
+		
+		moves= self.possible_moves()# for now
+		#for i in range(len(moves),-1,-1):
+			#self.make_move((moves[i]))
+		return moves
 	def possible_moves(self):
 		moves = []
 		for r in range(len(self.board)):# number of row
@@ -50,21 +53,29 @@ class State_Game():
 	
 	#get all the fleet moves add moves on list
 	def fleet_moves(self,r,c,moves):
-		directions = ((-1,0),(0,-1),(1,0),(0,1))
-		colorenemy = "S" if self.Goldmove else "G"
-		for d in directions:
-			for i in range(1,11):
-				endrow = r + d[0]*i
-				endcol = c + d[1]*i
-				if 0 <= endrow < 11 and 0 <= endcol <11:
-					endpiece = self.board[endrow][endcol]
+		if self.Goldmove:
+			directions = ((-1,0),(0,-1),(1,0),(0,1))
+			colorenemy = "S" if self.Goldmove else "G"
+			for d in directions:
+				for i in range(1,11):
+					endrow = r + d[0]*i
+					endcol = c + d[1]*i
+					if 0 <= endrow < 11 and 0 <= endcol <11:
+						endpiece = self.board[endrow][endcol]
 					#if self.Goldmove: # gold fleet moves
-				if endpiece  == "__":
-					moves.append(Moves((r,c),(endrow,endcol),self.board))
-				elif endpiece[0] == colorenemy :
-					break
-				else:
-					break
+					if endpiece  == "__":
+						moves.append(Moves((r,c),(endrow,endcol),self.board))
+					elif self.board[r+1][c-1] == colorenemy :
+						moves.append(Moves((r,c),(r+1,c-1)))
+					elif self.board[r-1][c-1] == colorenemy :
+						moves.append(Moves((r, c), (r - 1, c - 1)))
+					elif self.board[r - 1][c + 1] == colorenemy:
+						moves.append(Moves((r, c), (r - 1, c + 1)))
+					elif self.board[r + 1][c + 1] == colorenemy:
+						moves.append(Moves((r, c), (r + 1, c + 1)))
+					else:
+						break
+					
 		if c-1>= 0:# captures to the up left
 			if self.board[r-1][c-1][0] == colorenemy:
 				moves.append(Moves((r,c),(r-1,c-1),self.board))
@@ -96,8 +107,8 @@ class   Moves():
 		self.end_col = end_sq[1]
 		self.piece_move = board[self.start_row][self.start_col]
 		self.piece_captured = board[self.end_row][self.end_col]
-		self.IDmove = self.start_row*1000+self.start_col*100+self.end_row*10+self.end_col
-		 #print(IDmove)
+		self.IDmove = self.start_row*1000000+self.start_col*10000+self.end_row*100+self.end_col
+		print(self.IDmove)
 #overriding equal methods
 	
 	def __eq__(self,other):
