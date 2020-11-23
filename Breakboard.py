@@ -40,12 +40,13 @@ def main():
 	# window.eval("tk::PlaceWindow %s center" % window.winfo_toplevel())
 	# window.withdraw()
 	monitor = True
-	while running:
+	
+	while running and not GS.gwin and not GS.swin and not GS.draw:
 		# drawState_Game(screen, GS)
 		for e in p.event.get():
 			if e.type == p.QUIT:
 				running = False
-			
+
 			elif GS.Goldmove and AI.ControlGold and monitor:
 				monitor = False
 				# #     # AI.evaluationFunction(validMoves,captureMoves)
@@ -53,15 +54,21 @@ def main():
 				# print("move: ", move)
 				print("AI1")
 				GS.make_move(move)
+				# if (GS.move.end_col == 10 or GS.move.end_col == 0) or (GS.move.end_row == 0 or GS.move.end_row == 10):
+				# 	GS.gwin=True
+				# 	print("gold win")
 				moves_made = True
 				selected_sq = ()  # reset
 				players_click = []
-			elif GS.Goldmove == False and AI2.ControlGold == False and monitor:
+			elif GS.Goldmove == False and AI2.ControlGold == False  and monitor:
 				monitor = False
 				print("\n aI2")
 				#     # AI.evaluationFunction(validMoves,captureMoves)
 				move = AI2.AI_choose(GS, True)
 				GS.make_move(move)
+				if GS.piece_captured=='GB':
+					GS.swin=True
+					print("silver win")
 				moves_made = True
 				selected_sq = ()  # reset
 				players_click = []
@@ -81,7 +88,9 @@ def main():
 					if move in validmoves:
 						GS.make_move(move)
 						moves_made = True
-						
+						if GS.piece_captured == 'GB':
+							GS.swin=True
+							print("silver win")
 						selected_sq = ()  # reset clicks
 						players_click = []
 					else:
@@ -106,7 +115,7 @@ def main():
 def drawState_Game(screen, GS, validmoves, selected_sq):
 	drawBoard(screen)
 	drawPieces(screen, GS.board)
-	squarecolor(screen, GS, validmoves, selected_sq, p.Color("yellow"))
+	# squarecolor(screen, GS, validmoves, selected_sq, p.Color("yellow"))
 
 
 # draw squares on board

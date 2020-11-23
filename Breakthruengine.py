@@ -21,12 +21,17 @@ class State_Game:
 		self.secondmove=0
 		self.silverfleet=20
 		self.goldfleet=12
-		
+		self.swin=False
+		self.gwin=False
+		self.mobility=0
 		self.bigship=1
 		self.piece_captured=[]
+		self.gold=10
+		self.silver=10
 		self.Goldmove = True
 		self.movetrack =[]
 		self.DEBUG = True
+		self.draw=False
 	# takes a move as parapameter and execute
 	def make_move(self,move):
 		
@@ -39,12 +44,15 @@ class State_Game:
 				if self.piece_captured[-1][1] == 'Sf':
 					self.silverfleet -= 1
 					if self.silverfleet == 0:
-						self.goldwin(window, False)
+						self.gwin=True
 			self.board[move.end_row][move.end_col] = move.piece_move
 			self.secondmove = 2
 			self.movetrack.append(move)# track the move so we can undo it later
 			if (move.end_col == 10 or move.end_col == 0) or (move.end_row == 0 or move.end_row == 10):
-				self.goldWin(window, True)
+				self.gwin=True
+				
+				self.gold= 10*self.goldfleet
+				
 			if self.secondmove == 2:
 				self.secondmove = 0
 				self.Goldmove = not self.Goldmove #swap players
@@ -62,10 +70,13 @@ class State_Game:
 					
 					self.silverfleet -= 1
 					
-					if self.silverfleet == 0:
-						self.goldwin(window, False)
+					
 				elif self.piece_captured[-1][1] == 'GB':
-					self.silverwin(window)
+					self.silverfleet=1000
+					self.swin=True
+					
+					
+					self.silver = 10*self.silverfleet
 				
 			self.board[move.end_row][move.end_col] = move.piece_move
 			
@@ -90,6 +101,8 @@ class State_Game:
 		moves= self.possible_moves()# for now
 		#for i in range(len(moves),-1,-1):
 			#self.make_move((moves[i]))
+		if moves ==0 :
+			self.draw=True
 		return moves
 	def possible_moves(self):
 		moves = []
@@ -110,6 +123,8 @@ class State_Game:
 						
 					else:
 						self.function_move[piece](r, c, moves)
+		
+		self.mobility=len(moves)
 		return moves
 		# moves = []
 		# for r in range(len(self.board)):# number of row
@@ -162,22 +177,7 @@ class State_Game:
 					
 				else:break
 	
-	def goldwin(self, window, bigship):
-		if bigship:
-			messagebox.showinfo("Gold player wins", "the bigship escaped from the silver fleet")
-		else:
-			messagebox.showinfo("Gold player wins", "the silver fleet was destroyed")
-		window.deiconify()
-		window.destroy()
-		window.quit()
-		self.state = False
 	
-	def silverwin(self, window):
-		messagebox.showinfo("Silver player wins", "the bigship was captured")
-		window.deiconify()
-		window.destroy()
-		window.quit()
-		self.state = False
 	
 	# if c-1>= 0 :# captures to the up left
 		# 	if self.board[r-1][c-1][0] == colorenemy:
